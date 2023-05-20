@@ -2,13 +2,16 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <memory>
-#include <openpgl/openpgl.h>
+#include <openpgl/cpp/OpenPGL.h>
 
 namespace py = pybind11;
 
 /// Shorthand notation for defining a data structure
-#define PGL_PY_STRUCT(Name, ...) \
-    py::class_<Name>(m, #Name, ##__VA_ARGS__)
+#define PGL_PY_STRUCT(Class, ...) \
+    py::class_<Class>(m, #Class, ##__VA_ARGS__)
+
+#define PGL_PY_NAMED_STRUCT(Class, Name, ...) \
+    py::class_<Class>(m, Name, ##__VA_ARGS__)
 
 /// Shorthand to make a class or struct wrap in shared_ptr instead of the default unique_ptr
 #define PGL_PY_STRUCT_PTR(Name, PointsToName, ...) \
@@ -36,6 +39,9 @@ namespace py = pybind11;
 
 #define def_method(Function, ...) \
     m.def(#Function, &Function, ##__VA_ARGS__)
+
+#define def_named_method(Function, Name, ...) \
+    m.def(Name, &Function, ##__VA_ARGS__)
 
 #define def_lambda(Function, Lambda, ...) \
     m.def(#Function, Lambda, ##__VA_ARGS__)

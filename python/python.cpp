@@ -1,87 +1,13 @@
 #include "python.h"
 
+using namespace openpgl;
+
 PYBIND11_MODULE(openpglpy, m)
 {
 // common.h
 PGL_PY_STRUCT(pgl_vec3f);
-
 PGL_PY_STRUCT(pgl_vec2f);
-
 PGL_PY_STRUCT(pgl_box3f);
-
-def_method(pglVec3f);
-def_method(pglVec3fAdd);
-def_method(pglVec2f);
-def_method(pglVec2fAdd);
-def_method(pglPoint3f);
-def_method(pglPoint2f);
-def_method(pglBox3f);
-
-// data.h
-PGL_PY_STRUCT(PGLSampleData)
-.def_class_field(PGLSampleData, position)
-.def_class_field(PGLSampleData, direction)
-.def_class_field(PGLSampleData, weight)
-.def_class_field(PGLSampleData, pdf)
-.def_class_field(PGLSampleData, distance)
-.def_class_field(PGLSampleData, flags);
-
-PGL_PY_STRUCT(PGLPathSegmentData)
-.def_class_field(PGLPathSegmentData, position)
-.def_class_field(PGLPathSegmentData, directionIn)
-.def_class_field(PGLPathSegmentData, directionOut)
-.def_class_field(PGLPathSegmentData, normal)
-.def_class_field(PGLPathSegmentData, volumeScatter)
-.def_class_field(PGLPathSegmentData, pdfDirectionIn)
-.def_class_field(PGLPathSegmentData, isDelta)
-.def_class_field(PGLPathSegmentData, scatteringWeight)
-.def_class_field(PGLPathSegmentData, transmittanceWeight)
-.def_class_field(PGLPathSegmentData, directContribution)
-.def_class_field(PGLPathSegmentData, miWeight)
-.def_class_field(PGLPathSegmentData, scatteredContribution)
-.def_class_field(PGLPathSegmentData, russianRouletteProbability)
-.def_class_field(PGLPathSegmentData, eta)
-.def_class_field(PGLPathSegmentData, roughness);
-
-// region.h
-PGL_PY_STRUCT(PGLRegion);
-
-// samplestorage.h
-PGL_PY_STRUCT(PGLSampleStorage);
-
-def_method(pglNewSampleStorage);
-def_method(pglNewSampleStorageFromFile);
-def_method(pglReleaseSampleStorage);
-def_method(pglSampleStorageStoreToFile);
-def_method(pglSampleStorageAddSample);
-def_method(pglSampleStorageAddSamples);
-def_method(pglSampleStorageReserve);
-def_method(pglSampleStorageClear);
-def_method(pglSampleStorageClearSurface);
-def_method(pglSampleStorageClearVolume);
-def_method(pglSampleStorageGetSizeSurface);
-def_method(pglSampleStorageGetSizeVolume);
-def_method(pglSampleStorageGetSampleSurface);
-def_method(pglSampleStorageGetSampleVolume);
-
-// pathsegmentstorage.h
-PGL_PY_STRUCT(PGLPathSegmentStorage);
-def_method(pglReleasePathSegmentStorage);
-def_method(pglPathSegmentStorageReserve);
-def_method(pglPathSegmentStorageClear);
-def_method(pglPathSegmentSetMaxDistance);
-def_method(pglPathSegmentGetMaxDistance);
-def_method(pglPathSegmentGetNumSegments);
-def_method(pglPathSegmentGetNumSamples);
-def_method(pglPathSegmentStoragePrepareSamples);
-def_method(pglPathSegmentStorageCalculatePixelEstimate);
-def_method(pglPathSegmentStorageGetSamples);
-def_method(pglPathSegmentStorageAddSample);
-def_method(pglPathSegmentStorageNextSegment);
-def_method(pglPathSegmentStorageAddSegment);
-def_method(pglPathSegmentStorageValidateSamples);
-def_method(pglPathSegmentStorageValidateSegments);
-def_method(pglPathSegmentStoragePropagateSamples);
 
 // types.h
 PGL_PY_ENUM(PGL_SPATIAL_STRUCTURE_TYPE)
@@ -149,53 +75,138 @@ PGL_PY_STRUCT(PGLFieldArguments)
 
 def_method(pglFieldArgumentsSetDefaults);
 
-// device.h
-def_lambda(pglNewDevice, [](PGL_DEVICE_TYPE deviceType){ return py::capsule(pglNewDevice(deviceType)); });
-def_lambda(pglDeviceNewField, [](py::capsule device, PGLFieldArguments args) { return py::capsule(pglDeviceNewField((PGLDevice) device.ptr(), args)); });
-def_lambda(pglDeviceNewFieldFromFile, [](py::capsule device, const char* fieldName) { return py::capsule(pglDeviceNewFieldFromFile((PGLDevice) device.ptr(), fieldName)); });
-def_lambda(pglReleaseDevice, [](py::capsule device) { pglReleaseDevice((PGLDevice) device.ptr()); });
+// data.h
+PGL_PY_STRUCT(PGLSampleData)
+.def_init()
+.def_class_field(PGLSampleData, position)
+.def_class_field(PGLSampleData, direction)
+.def_class_field(PGLSampleData, weight)
+.def_class_field(PGLSampleData, pdf)
+.def_class_field(PGLSampleData, distance)
+.def_class_field(PGLSampleData, flags);
 
-// field.h
-PGL_PY_STRUCT(PGLField);
-// def_method(pglReleaseField);
-// def_method(pglFieldStoreToFile);
-// def_method(pglFieldGetIteration);
-// def_method(pglFieldSetSceneBounds);
-// def_method(pglFieldGetSceneBounds);
-// def_method(pglFieldUpdate);
-// def_method(pglFieldUpdateSurface);
-// def_method(pglFieldUpdateVolume);
-// def_method(pglFieldReset);
-// def_method(pglFieldNewSurfaceSamplingDistribution);
-// def_method(pglFieldInitSurfaceSamplingDistribution);
-// def_method(pglFieldNewVolumeSamplingDistribution);
-// def_method(pglFieldInitVolumeSamplingDistribution);
-// def_method(pglFieldValidate);
+PGL_PY_STRUCT(PGLPathSegmentData)
+.def_init()
+.def_class_field(PGLPathSegmentData, position)
+.def_class_field(PGLPathSegmentData, directionIn)
+.def_class_field(PGLPathSegmentData, directionOut)
+.def_class_field(PGLPathSegmentData, normal)
+.def_class_field(PGLPathSegmentData, volumeScatter)
+.def_class_field(PGLPathSegmentData, pdfDirectionIn)
+.def_class_field(PGLPathSegmentData, isDelta)
+.def_class_field(PGLPathSegmentData, scatteringWeight)
+.def_class_field(PGLPathSegmentData, transmittanceWeight)
+.def_class_field(PGLPathSegmentData, directContribution)
+.def_class_field(PGLPathSegmentData, miWeight)
+.def_class_field(PGLPathSegmentData, scatteredContribution)
+.def_class_field(PGLPathSegmentData, russianRouletteProbability)
+.def_class_field(PGLPathSegmentData, eta)
+.def_class_field(PGLPathSegmentData, roughness);
 
-// surfacesamplingdistribution.h
-PGL_PY_STRUCT(PGLSurfaceSamplingDistribution);
-// def_method(pglReleaseSurfaceSamplingDistribution);
-// def_method(pglSurfaceSamplingDistributionApplyCosineProduct);
-// def_method(pglSurfaceSamplingDistributionSupportsApplyCosineProduct);
-// def_method(pglSurfaceSamplingDistributionSample);
-// def_method(pglSurfaceSamplingDistributionPDF);
-// def_method(pglSurfaceSamplingDistributionSamplePDF);
-// def_method(pglSurfaceSamplingDistributionIncomingRadiancePDF);
-// def_method(pglSurfaceSamplingDistributionValidate);
-// def_method(pglSurfaceSamplingDistributionClear);
-// def_method(pglSurfaceSamplingGetRegion);
+// Common.h
+def_named_method(cpp::Vector3, "Vector3");
+def_named_method(cpp::Vector2, "Vector2");
+def_named_method(cpp::Point3, "Point3");
+def_named_method(cpp::Point2, "Point2");
 
-// volumesamplingdistribution.h
-PGL_PY_STRUCT(PGLVolumeSamplingDistribution);
-// def_method(pglReleaseVolumeSamplingDistribution);
-// def_method(pglVolumeSamplingDistributionSample);
-// def_method(pglVolumeSamplingDistributionPDF);
-// def_method(pglVolumeSamplingDistributionSamplePDF);
-// def_method(pglVolumeSamplingDistributionIncomingRadiancePDF);
-// def_method(pglVolumeSamplingDistributionValidate);
-// def_method(pglVolumeSamplingDistributionClear);
-// def_method(pglVolumeSamplingDistributionApplySingleLobeHenyeyGreensteinProduct);
-// def_method(pglVolumeSamplingDistributionSupportsApplySingleLobeHenyeyGreensteinProduct);
-// def_method(pglVolumeSamplingGetRegion);
+// Field.h
+PGL_PY_NAMED_STRUCT(cpp::Field, "Field")
+.def_init(cpp::Device*, PGLFieldArguments)
+.def_init(cpp::Device*, const std::string&)
+.def_class_method(cpp::Field, Store)
+.def_class_method(cpp::Field, SetSceneBounds)
+.def_class_method(cpp::Field, GetSceneBounds)
+.def_class_method(cpp::Field, Update)
+.def_class_method(cpp::Field, UpdateSurface)
+.def_class_method(cpp::Field, UpdateVolume)
+.def_class_method(cpp::Field, Reset)
+.def_class_method(cpp::Field, GetIteration)
+.def_class_method(cpp::Field, Validate);
+
+// Device.h
+PGL_PY_NAMED_STRUCT(cpp::Device, "Device") 
+.def_init(PGL_DEVICE_TYPE);
+
+// PathSegment.h
+def_named_method(cpp::Reset, "Reset");
+def_named_method(cpp::SetPosition, "SetPosition");
+def_named_method(cpp::SetNormal, "SetNormal");
+def_named_method(cpp::SetDirectionIn, "SetDirectionIn");
+def_named_method(cpp::GetDirectionIn, "GetDirectionIn");
+def_named_method(cpp::SetPDFDirectionIn, "SetPDFDirectionIn");
+def_named_method(cpp::SetDirectionOut, "SetDirectionOut");
+def_named_method(cpp::SetVolumeScatter, "SetVolumeScatter");
+def_named_method(cpp::SetScatteringWeight, "SetScatteringWeight");
+def_named_method(cpp::SetDirectContribution, "SetDirectContribution");
+def_named_method(cpp::AddDirectContribution, "AddDirectContribution");
+def_named_method(cpp::SetScatteredContribution, "SetScatteredContribution");
+def_named_method(cpp::AddScatteredContribution, "AddScatteredContribution");
+def_named_method(cpp::SetMiWeight, "SetMiWeight");
+def_named_method(cpp::SetRussianRouletteProbability, "SetRussianRouletteProbability");
+def_named_method(cpp::SetEta, "SetEta");
+def_named_method(cpp::SetIsDelta, "SetIsDelta");
+def_named_method(cpp::SetRoughness, "SetRoughness");
+def_named_method(cpp::SetTransmittanceWeight, "SetTransmittanceWeight");
+
+// PathSegmentStorage.h
+PGL_PY_NAMED_STRUCT(cpp::PathSegmentStorage, "PathSegmentStorage")
+.def_init()
+.def_class_method(cpp::PathSegmentStorage, Reserve)
+.def_class_method(cpp::PathSegmentStorage, Clear)
+.def_class_method(cpp::PathSegmentStorage, CalculatePixelEstimate)
+.def_class_method(cpp::PathSegmentStorage, GetSamples)
+.def_class_method(cpp::PathSegmentStorage, NextSegment)
+.def_class_method(cpp::PathSegmentStorage, AddSegment)
+.def_class_method(cpp::PathSegmentStorage, AddSample)
+.def_class_method(cpp::PathSegmentStorage, SetMaxDistance)
+.def_class_method(cpp::PathSegmentStorage, GetMaxDistance)
+.def_class_method(cpp::PathSegmentStorage, GetNumSegments)
+.def_class_method(cpp::PathSegmentStorage, GetNumSamples)
+.def_class_method(cpp::PathSegmentStorage, Validate)
+.def_class_method(cpp::PathSegmentStorage, ValidateSegments)
+.def_class_method(cpp::PathSegmentStorage, ValidateSamples)
+.def_class_method(cpp::PathSegmentStorage, PropagateSamples);
+
+// SampleStorage.h
+PGL_PY_NAMED_STRUCT(cpp::SampleStorage, "SampleStorage")
+.def_init()
+.def_init(std::string)
+.def_class_method(cpp::SampleStorage, Store)
+.def_class_method(cpp::SampleStorage, AddSample)
+.def_class_method(cpp::SampleStorage, AddSamples)
+.def_class_method(cpp::SampleStorage, Reserve)
+.def_class_method(cpp::SampleStorage, Clear)
+.def_class_method(cpp::SampleStorage, ClearSurface)
+.def_class_method(cpp::SampleStorage, ClearVolume)
+.def_class_method(cpp::SampleStorage, GetSizeSurface)
+.def_class_method(cpp::SampleStorage, GetSizeVolume)
+.def_class_method(cpp::SampleStorage, GetSampleSurface)
+.def_class_method(cpp::SampleStorage, GetSampleVolume);
+
+// SurfaceSamplingDistribution.h
+PGL_PY_NAMED_STRUCT(cpp::SurfaceSamplingDistribution, "SurfaceSamplingDistribution")
+.def_init(const cpp::Field*)
+.def_class_method(cpp::SurfaceSamplingDistribution, Init)
+.def_class_method(cpp::SurfaceSamplingDistribution, Clear)
+.def_class_method(cpp::SurfaceSamplingDistribution, Sample)
+.def_class_method(cpp::SurfaceSamplingDistribution, PDF)
+.def_class_method(cpp::SurfaceSamplingDistribution, SamplePDF)
+.def_class_method(cpp::SurfaceSamplingDistribution, IncomingRadiancePDF)
+.def_class_method(cpp::SurfaceSamplingDistribution, SupportsApplyCosineProduct)
+.def_class_method(cpp::SurfaceSamplingDistribution, Validate)
+.def_class_method(cpp::SurfaceSamplingDistribution, GetRegion);
+
+// VolumeSamplingDistribution.h
+PGL_PY_NAMED_STRUCT(cpp::VolumeSamplingDistribution, "VolumeSamplingDistribution")
+.def_init(const cpp::Field*)
+.def_class_method(cpp::VolumeSamplingDistribution, Init)
+.def_class_method(cpp::VolumeSamplingDistribution, Clear)
+.def_class_method(cpp::VolumeSamplingDistribution, Sample)
+.def_class_method(cpp::VolumeSamplingDistribution, PDF)
+.def_class_method(cpp::VolumeSamplingDistribution, SamplePDF)
+.def_class_method(cpp::VolumeSamplingDistribution, IncomingRadiancePDF)
+.def_class_method(cpp::VolumeSamplingDistribution, SupportsApplySingleLobeHenyeyGreensteinProduct)
+.def_class_method(cpp::VolumeSamplingDistribution, ApplySingleLobeHenyeyGreensteinProduct)
+.def_class_method(cpp::VolumeSamplingDistribution, Validate);
 
 }
