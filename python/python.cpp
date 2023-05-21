@@ -5,9 +5,21 @@ using namespace openpgl;
 PYBIND11_MODULE(openpglpy, m)
 {
 // common.h
-PGL_PY_STRUCT(pgl_vec3f);
-PGL_PY_STRUCT(pgl_vec2f);
-PGL_PY_STRUCT(pgl_box3f);
+PGL_PY_STRUCT(pgl_vec3f)
+.def_init()
+.def_class_field(pgl_vec3f, x)
+.def_class_field(pgl_vec3f, y)
+.def_class_field(pgl_vec3f, z);
+
+PGL_PY_STRUCT(pgl_vec2f)
+.def_init()
+.def_class_field(pgl_vec2f, x)
+.def_class_field(pgl_vec2f, y);
+
+PGL_PY_STRUCT(pgl_box3f)
+.def_init()
+.def_class_field(pgl_box3f, lower)
+.def_class_field(pgl_box3f, upper);
 
 // types.h
 PGL_PY_ENUM(PGL_SPATIAL_STRUCTURE_TYPE)
@@ -24,14 +36,14 @@ PGL_PY_ENUM(PGL_DEVICE_TYPE)
 .def_value(PGL_DEVICE_TYPE, PGL_DEVICE_TYPE_CPU_8)
 .def_value(PGL_DEVICE_TYPE, PGL_DEVICE_TYPE_CPU_16);
 
-PGL_PY_STRUCT(PGLKDTreeArguments)
+PGL_PY_NAMED_STRUCT(PGLKDTreeArguments, "KDTreeArguments")
 .def_init()
 .def_class_field(PGLKDTreeArguments, knnLookup)
 .def_class_field(PGLKDTreeArguments, minSamples)
 .def_class_field(PGLKDTreeArguments, maxSamples)
 .def_class_field(PGLKDTreeArguments, maxDepth);
 
-PGL_PY_STRUCT(PGLVMMFactoryArguments)
+PGL_PY_NAMED_STRUCT(PGLVMMFactoryArguments, "VMMFactoryArguments")
 .def_init()
 .def_class_field(PGLVMMFactoryArguments, initK)
 .def_class_field(PGLVMMFactoryArguments, initKappa)
@@ -59,7 +71,7 @@ PGL_PY_ENUM(PGLDQTSplitMetric)
 .def_value(PGLDQTSplitMetric, MEAN)
 .def_value(PGLDQTSplitMetric, SECOND_MOMENT);
 
-PGL_PY_STRUCT(PGLDQTFactoryArguments)
+PGL_PY_NAMED_STRUCT(PGLDQTFactoryArguments, "DQTFactoryArguments")
 .def_init()
 .def_class_field(PGLDQTFactoryArguments, leafEstimator)
 .def_class_field(PGLDQTFactoryArguments, splitMetric)
@@ -67,7 +79,7 @@ PGL_PY_STRUCT(PGLDQTFactoryArguments)
 .def_class_field(PGLDQTFactoryArguments, footprintFactor)
 .def_class_field(PGLDQTFactoryArguments, maxLevels);
 
-PGL_PY_STRUCT(PGLFieldArguments)
+PGL_PY_NAMED_STRUCT(PGLFieldArguments, "FieldArguments")
 .def_init()
 .def_class_field(PGLFieldArguments, spatialStructureType)
 .def_class_field(PGLFieldArguments, directionalDistributionType)
@@ -76,7 +88,7 @@ PGL_PY_STRUCT(PGLFieldArguments)
 def_method(pglFieldArgumentsSetDefaults);
 
 // data.h
-PGL_PY_STRUCT(PGLSampleData)
+PGL_PY_NAMED_STRUCT(PGLSampleData, "SampleData")
 .def_init()
 .def_class_field(PGLSampleData, position)
 .def_class_field(PGLSampleData, direction)
@@ -85,7 +97,7 @@ PGL_PY_STRUCT(PGLSampleData)
 .def_class_field(PGLSampleData, distance)
 .def_class_field(PGLSampleData, flags);
 
-PGL_PY_STRUCT(PGLPathSegmentData)
+PGL_PY_NAMED_STRUCT(PGLPathSegmentData, "PathSegmentData")
 .def_init()
 .def_class_field(PGLPathSegmentData, position)
 .def_class_field(PGLPathSegmentData, directionIn)
@@ -108,6 +120,8 @@ def_named_method(cpp::Vector3, "Vector3");
 def_named_method(cpp::Vector2, "Vector2");
 def_named_method(cpp::Point3, "Point3");
 def_named_method(cpp::Point2, "Point2");
+def_named_method_overload(cpp::Box3, "Box3FromPoints", pgl_box3f, pgl_point3f, pgl_point3f);
+def_named_method_overload(cpp::Box3, "Box3FromFloats", pgl_box3f, float, float, float, float, float, float);
 
 // Field.h
 PGL_PY_NAMED_STRUCT(cpp::Field, "Field")

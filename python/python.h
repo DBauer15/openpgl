@@ -43,5 +43,8 @@ namespace py = pybind11;
 #define def_named_method(Function, Name, ...) \
     m.def(Name, &Function, ##__VA_ARGS__)
 
+#define def_named_method_overload(Function, Name, ReturnType, ...) \
+    m.def(Name, static_cast<ReturnType (*)(__VA_ARGS__)>(&Function))
+
 #define def_lambda(Function, Lambda, ...) \
     m.def(#Function, Lambda, ##__VA_ARGS__)
